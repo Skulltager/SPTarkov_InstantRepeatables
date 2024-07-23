@@ -1,27 +1,24 @@
 import { DependencyContainer } from "tsyringe";
-
-import { IPreAkiLoadMod } from "@spt-aki/models/external/IPreAkiLoadMod";
-import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
-import { ConfigServer } from "@spt-aki/servers/ConfigServer";
-import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
-import { QuestController } from "@spt-aki/controllers/QuestController";
-import { RepeatableQuestController } from "@spt-aki/controllers/RepeatableQuestController";
-
-import { IPmcData } from "@spt-aki/models/eft/common/IPmcData";
-import { ICompleteQuestRequestData } from "@spt-aki/models/eft/quests/ICompleteQuestRequestData";
-import { IQuestConfig } from "@spt-aki/models/spt/config/IQuestConfig";
+import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
+import { ILogger } from "@spt/models/spt/utils/ILogger";
+import { ConfigServer } from "@spt/servers/ConfigServer";
+import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import { QuestController } from "@spt/controllers/QuestController";
+import { RepeatableQuestController } from "@spt/controllers/RepeatableQuestController";
+import { IPmcData } from "@spt/models/eft/common/IPmcData";
+import { ICompleteQuestRequestData } from "@spt/models/eft/quests/ICompleteQuestRequestData";
+import { IQuestConfig } from "@spt/models/spt/config/IQuestConfig";
 import { CustomRepeatableQuestController } from "./CustomRepeatableQuestController";
-import { IPmcDataRepeatableQuest, IRepeatableQuest } from "@spt-aki/models/eft/common/tables/IRepeatableQuests";
-import { JsonUtil } from "@spt-aki/utils/JsonUtil";
-import { IItemEventRouterResponse } from "@spt-aki/models/eft/itemEvent/IItemEventRouterResponse";
+import { IPmcDataRepeatableQuest, IRepeatableQuest } from "@spt/models/eft/common/tables/IRepeatableQuests";
+import { JsonUtil } from "@spt/utils/JsonUtil";
+import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
 
-class InstantRepeatables implements IPreAkiLoadMod
+class InstantRepeatables implements IPreSptLoadMod
 {
     private logger: ILogger
-
     private static container: DependencyContainer;
     
-    preAkiLoad(container: DependencyContainer): void 
+    preSptLoad(container: DependencyContainer): void 
     {
         InstantRepeatables.container = container;
         this.logger = container.resolve<ILogger>("WinstonLogger");
@@ -38,7 +35,6 @@ class InstantRepeatables implements IPreAkiLoadMod
         container.register<CustomRepeatableQuestController>("CustomRepeatableQuestController", CustomRepeatableQuestController);
         container.register<RepeatableQuestController>("RepeatableQuestController", { useToken: "CustomRepeatableQuestController" });
     }
-
 
     refreshDailyOrWeekly(pmcData: IPmcData, body: ICompleteQuestRequestData, sessionID: string) : IItemEventRouterResponse
     {
@@ -103,4 +99,4 @@ class InstantRepeatables implements IPreAkiLoadMod
     }
 }
 
-module.exports = { mod: new InstantRepeatables() }
+export const mod = new InstantRepeatables();
